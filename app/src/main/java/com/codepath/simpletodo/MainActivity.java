@@ -2,6 +2,7 @@ package com.codepath.simpletodo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,13 +18,15 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> items;
     ArrayAdapter<String> itemsAdapter;
     ListView lvItems;
+    private String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         lvItems = (ListView)  findViewById(R.id.lvItems);
-        items = new ArrayList<>();
+        //items = new ArrayList<>();
+        readItems(); // instantiates a new items array from a file
         itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         lvItems.setAdapter(itemsAdapter);
         items.add("First Item");
@@ -47,19 +50,22 @@ public class MainActivity extends AppCompatActivity {
         String itemText = etNewItem.getText().toString();
         itemsAdapter.add(itemText);
         etNewItem.setText("");
+        writeItems();
     }
 
-    private void readItem() {
+    private void readItems() {
         File filesDir = getFilesDir();
+        Log.d(TAG, "readItems: " + filesDir.getPath());
         File todoFile = new File(filesDir, "todo.txt");
         try {
-            items = new ArrayList<String>(FileUtils.readLines(todoFile));
+            items = new ArrayList<>(FileUtils.readLines(todoFile));
         } catch (IOException e) {
+            Log.d(TAG, "readItems: Oops!! IOException");
             e.printStackTrace();
         }
     }
 
-    private void writeItem() {
+    private void writeItems() {
         File filesDir = getFilesDir();
         File todoFile = new File(filesDir, "todo.txt");
         try {
